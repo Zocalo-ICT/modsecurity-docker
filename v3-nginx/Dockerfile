@@ -1,4 +1,4 @@
-ARG NGINX_VERSION="1.20.1"
+ARG NGINX_VERSION="1.21.1"
 
 FROM nginx:${NGINX_VERSION} as build
 
@@ -38,7 +38,7 @@ RUN wget --quiet https://github.com/ssdeep-project/ssdeep/releases/download/rele
      && tar -xvzf ssdeep-2.14.1.tar.gz \
      && cd ssdeep-2.14.1 \
      && ./configure \
-     && make install
+     && make -j12 install
 
 RUN git clone https://github.com/SpiderLabs/ModSecurity --branch v${MODSEC_VERSION} --depth 1 \
      && cd ModSecurity \
@@ -46,7 +46,7 @@ RUN git clone https://github.com/SpiderLabs/ModSecurity --branch v${MODSEC_VERSI
      && git submodule init \
      && git submodule update \
      && ./configure --with-yajl=/sources/yajl/build/yajl-2.1.0/ \
-     && make install
+     && make -j12 install
 
 # We use master
 RUN git clone -b master --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git \
@@ -54,7 +54,7 @@ RUN git clone -b master --depth 1 https://github.com/SpiderLabs/ModSecurity-ngin
      && tar -xzf nginx-${NGINX_VERSION}.tar.gz \
      && cd ./nginx-${NGINX_VERSION} \
      && ./configure --with-compat --add-dynamic-module=../ModSecurity-nginx \
-     && make modules \
+     && make -j12 modules \
      && cp objs/ngx_http_modsecurity_module.so /etc/nginx/modules/ \
      && mkdir /etc/modsecurity.d \
      && wget --quiet https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/modsecurity.conf-recommended \
@@ -73,8 +73,6 @@ RUN openssl req -x509 -days 365 -new \
 FROM nginx:${NGINX_VERSION}
 
 ARG MODSEC_VERSION=3.0.5
-
-LABEL maintainer="Felipe Zipitria <felipe.zipitria@owasp.org>"
 
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]

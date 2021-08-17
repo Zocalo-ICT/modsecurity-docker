@@ -1,3 +1,19 @@
+# Zócalo ICT
+This repository takes the ModSecurity Docker Image repository and produces images for the arm64 and armv7 architectures on Dockerhub.
+
+## How to use
+
+### Prerequisites:
+ - Set DOCKER_USER environment variable: `export DOCKER_USER='[MY_USER_NAME]'`
+ - Make sure buildx builder has been set to active before running this
+       `docker buildx use [MY_BUILDER_NAME]`
+ - Log in to dockerhub with `docker login -u "$DOCKER_USER"`
+
+### Build command
+`./build.sh`
+
+---
+
 # ModSecurity Docker Image
 
 [![dockeri.co](http://dockeri.co/image/owasp/modsecurity)](https://hub.docker.com/r/owasp/modsecurity/)
